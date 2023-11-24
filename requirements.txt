@@ -1,0 +1,4 @@
+Django>=2.2,<4.0
+djangorestframework>=3.10,<4.1
+django_extensions
+django-cors-headers
