@@ -13,15 +13,18 @@ class CategorySerializer(ModelSerializer):
             'id',
             'name',
             'slug',
+            'description',
+            'created'
         ]
 
 
 class CreateCategorySerializer(ModelSerializer):
-    
+    name = serializers.CharField(source='title' , required=True)
     class Meta:
         model = Category
         fields = [
-            'title',
+            'name',
+            'slug',
             'description',
         ]
         
@@ -31,7 +34,6 @@ class UpdateCategorySerializer(ModelSerializer):
         model = Category
         fields = [
             'title',
-            'slug',
             'description',
         ]
 
