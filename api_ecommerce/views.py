@@ -7,32 +7,12 @@ from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.generics import ListCreateAPIView , RetrieveUpdateDestroyAPIView
 import json
+from rest_framework.viewsets import ModelViewSet 
 
 # Create your views here.
 
-# class ApiCategories(APIView):
-    
-#     def get(self , request):
-#         '''
-#             Get list of categories
-#         '''
-#         categories = Category.objects.all()
-#         serializer = CategorySerializer(categories, many=True)
-        
-#         return Response(serializer.data)
-    
-    
-#     def post(self , request):
-#         '''
-#             Save a new category
-#         '''
-#         product = CreateCategorySerializer(data = request.data)
-#         product.is_valid(raise_exception=True)
-#         product.save()
-        
-#         return Response(product.data)
 
-class ApiCategories(ListCreateAPIView):
+class CategoryViewSet(ModelViewSet):
     queryset = Category.objects.all()
     
     
@@ -40,131 +20,52 @@ class ApiCategories(ListCreateAPIView):
         
         if self.request.method == 'GET':
             return CategorySerializer
-        elif self.request.method == 'POST':
+        if self.request.method == 'POST':
             return CreateCategorySerializer
-    
-    def list(self, request, *args, **kwargs):
-        
-        categories = self.get_queryset()
-        serializer = self.get_serializer(categories , many=True)
-        return Response(serializer.data)
-    
-    
-    def post(self, request, *args, **kwargs):
-        
-        category_deserializer = self.get_serializer(data = request.data)
-        category_deserializer.is_valid(raise_exception=True)
-        return Response(category_deserializer.data)
-        
-      
-
-# class ApiCategory(APIView):
-    
-#     def get(self , request , pk):
-#         '''
-#             Get a category item by id
-#         '''
-#         category = get_object_or_404(Category , id = pk)
-#         serializer = CategorySerializer(category , many=False)
-#         return Response(serializer.data)
-        
-    
-    
-#     def put(self , request , pk):
-#         '''
-#             Update data of a category
-#         '''
-#         category = get_object_or_404(Category , id = pk)
-#         category_deserializer = UpdateCategorySerializer(category , data=request.data)
-#         category_deserializer.is_valid(raise_exception=True)
-#         category_deserializer.save()
-#         return Response(category_deserializer.data)
-        
+        if self.request.method == 'PUT' or self.request.method == 'PATCH':
+            return UpdateCategorySerializer
         
 
-#     def delete(self , request , pk):
-#         '''
-#             Delete category via an id
-#         '''
-#         category = get_object_or_404(Category , id = pk)
-#         category.delete()
-#         return Response(status.HTTP_204_NO_CONTENT)
-
-
-class ApiCategory(RetrieveUpdateDestroyAPIView):
+# class ApiCategory(RetrieveUpdateDestroyAPIView):
     
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
+#     queryset = Category.objects.all()
+    
+#     def get_serializer_class(self):
+        
+#         if self.request.method == 'GET':
+#             return CategorySerializer
+#         if self.request.method == 'PUT' or self.request.method == 'PATCH':
+#             return UpdateCategorySerializer
+        
+#         return CategorySerializer
     
 
-class ApiProducts(ListCreateAPIView):
+class ProductViewSet(ModelViewSet):
     
     queryset = Product.objects.all()
-    # serializer_class = ProductSerializer
     
     def get_serializer_class(self):
         
         if self.request.method == 'GET':
             return ProductSerializer
-        elif self.request.method == 'POST':
+        if self.request.method == 'POST':
             return CreateProductSerializer
+        if self.request.method == 'PUT' or self.request.method == 'PATCH':
+            return UpdateProductSerializer
     
-    # def get(self , request):
-    #     '''
-    #         Get list of products
-    #     '''
-    #     products = Product.objects.all()
-    #     serializer = ProductSerializer(products, many=True)
-    #     return Response(serializer.data)
-         
-    
-    # def post(self , request):
-    #     '''
-    #         Save a new product
-    #     '''
-    #     serializer = CreateProductSerializer(data=request.data)
-    #     serializer.is_valid(raise_exception=True)
-    #     serializer.save()
-    #     return Response(serializer.data)
         
     
 
-class ApiProduct(RetrieveUpdateDestroyAPIView):
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
+# class ApiProduct(RetrieveUpdateDestroyAPIView):
+#     queryset = Product.objects.all()
     
-    def get_serializer_class(self):
+#     def get_serializer_class(self):
         
-        if self.request.method == 'PUT':
-            return UpdateProductSerializer
+#         if self.request.method == 'GET':
+#             return ProductSerializer
+#         if self.request.method == 'PUT' or self.request.method == 'PATCH':
+#             return UpdateProductSerializer
         
-        return ProductSerializer
+#         return ProductSerializer
     
-    # def get(self , request , pk):
-    #     '''
-    #         Get product by id
-    #     '''
-    #     product = get_object_or_404(Product , id = pk)
-    #     serializer = ProductSerializer(product , many=False)
-    #     return Response(serializer.data)
-        
-    
-    # def put(self , request , pk):
-    #     '''
-    #         Update a product by id
-    #     '''
-    #     product_deserializer = UpdateProductSerializer(product , data=request.data)
-    #     product_deserializer.is_valid(raise_exception=True)
-    #     product_deserializer.save()
-        
-    #     return Response(product_deserializer.data)
-        
-    
-    # def delete(self , request , pk):
-    #     '''
-    #         Delete a product
-    #     '''
-    #     product = get_object_or_404(Product , id = pk)
-    #     product.delete()
-    #     return Response(status.HTTP_204_NO_CONTENT)
         
