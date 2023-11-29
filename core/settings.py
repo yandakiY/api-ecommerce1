@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'core',
     'ecommerce',
     'api_ecommerce',
-    'rest_framework'
+    'rest_framework',
+    'django_filters'
 ]
 
 MIDDLEWARE = [
@@ -103,6 +104,11 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+REST_FRAMEWORK = {
+    'PAGE_SIZE' : 2
+    
+}
 
 
 # Internationalization

@@ -39,7 +39,7 @@ class UpdateCategorySerializer(ModelSerializer):
 
 class ProductSerializer(ModelSerializer):
     
-    categories = CategorySerializer(source = 'category', many=False)
+    category_product = CategorySerializer(source = 'category', many=False)
     name = serializers.CharField(source='title' , required=True)
 
     class Meta:
@@ -54,7 +54,7 @@ class ProductSerializer(ModelSerializer):
             'slug',
             'created',
             'discount',
-            'categories',
+            'category_product',
         ]
         
 class CreateProductSerializer(ModelSerializer):
