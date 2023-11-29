@@ -2,7 +2,7 @@ from decimal import Decimal
 from django.db import models
 from django.utils.text import slugify
 from utils.models import Model as ModelId
-from django_extensions.db.models import TitleSlugDescriptionModel , TimeStampedModel ,ActivatorModel
+from django_extensions.db.models import TitleSlugDescriptionModel , TitleDescriptionModel , TimeStampedModel ,ActivatorModel
 
 # Create your models here.
 
@@ -29,6 +29,9 @@ class Product(ModelId , TitleSlugDescriptionModel, TimeStampedModel , ActivatorM
     image = models.ImageField(upload_to='img/' , default='' , blank=True, null=True)
     
     
+    def __str__(self) -> str:
+        return f'{self.title}'
+    
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
         super().save(*args, **kwargs)
@@ -48,3 +51,10 @@ class Product(ModelId , TitleSlugDescriptionModel, TimeStampedModel , ActivatorM
         
         return self.image
     
+    
+class Review(TitleDescriptionModel , TimeStampedModel , ModelId):
+    
+    product = models.ForeignKey(Product , on_delete=models.CASCADE , related_name='reviews', default=None)
+    
+    def __str__(self) -> str:
+        return f'{self.title}'

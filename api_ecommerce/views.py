@@ -1,7 +1,7 @@
 from django.shortcuts import render , get_object_or_404
 from rest_framework.response import Response
-from .serializers import CategorySerializer , UpdateProductSerializer ,CreateProductSerializer , ProductSerializer, CreateCategorySerializer, UpdateCategorySerializer
-from ecommerce.models import Category, Product
+from .serializers import ReviewSerializer , CategorySerializer , UpdateProductSerializer ,CreateProductSerializer , ProductSerializer, CreateCategorySerializer, UpdateCategorySerializer
+from ecommerce.models import Category, Product , Review
 from django_filters.rest_framework import DjangoFilterBackend
 from .filter import ProductFilter , CategoryFilter
 from rest_framework import status
@@ -61,5 +61,14 @@ class ProductViewSet(ModelViewSet):
     
         
 
+class ReviewViewSet(ModelViewSet):
     
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+    
+    def get_queryset(self):
+        return Review.objects.filter(id = self.kwargs['product_pk'])
+    
+    def get_serializer_context(self):
+        return {'product_id':self.kwargs['product_pk']}
         

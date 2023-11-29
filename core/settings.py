@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'ecommerce',
     'api_ecommerce',
     'rest_framework',
-    'django_filters'
+    'django_filters',
 ]
 
 MIDDLEWARE = [

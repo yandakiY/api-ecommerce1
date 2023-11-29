@@ -1,6 +1,6 @@
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
-from ecommerce.models import Category, Product
+from ecommerce.models import Category, Product , Review
 
 
 class CategorySerializer(ModelSerializer):
@@ -84,3 +84,17 @@ class UpdateProductSerializer(ModelSerializer):
             'discount',
             'category',
         ]
+        
+class ReviewSerializer(ModelSerializer):
+    
+    class Meta:
+        model = Review
+        fields = [
+            'title',
+            'description'
+        ]
+        
+    
+    def create(self, validated_data):
+        product_id = self.context['product_id']
+        return Review.objects.create(product_id=product_id , **validated_data)
