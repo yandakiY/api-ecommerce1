@@ -1,7 +1,7 @@
 from django.shortcuts import render , get_object_or_404
 from rest_framework.response import Response
-from .serializers import ReviewSerializer , CategorySerializer , UpdateProductSerializer ,CreateProductSerializer , ProductSerializer, CreateCategorySerializer, UpdateCategorySerializer
-from ecommerce.models import Category, Product , Review
+from .serializers import CartSerializer , ReviewSerializer , CategorySerializer , UpdateProductSerializer ,CreateProductSerializer , ProductSerializer, CreateCategorySerializer, UpdateCategorySerializer
+from ecommerce.models import Category, Product , Review , Cart
 from django_filters.rest_framework import DjangoFilterBackend
 from .filter import ProductFilter , CategoryFilter
 from rest_framework import status
@@ -9,7 +9,8 @@ from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.generics import ListCreateAPIView , RetrieveUpdateDestroyAPIView
 import json
-from rest_framework.viewsets import ModelViewSet 
+from rest_framework.viewsets import ModelViewSet , GenericViewSet 
+from rest_framework.mixins import CreateModelMixin , DestroyModelMixin , RetrieveModelMixin , ListModelMixin
 from rest_framework.filters import SearchFilter , OrderingFilter
 from rest_framework.pagination import PageNumberPagination
 
@@ -67,8 +68,13 @@ class ReviewViewSet(ModelViewSet):
     serializer_class = ReviewSerializer
     
     def get_queryset(self):
-        return Review.objects.filter(id = self.kwargs['product_pk'])
+        return Review.objects.filter(product_id = self.kwargs['product_pk'])
     
     def get_serializer_context(self):
         return {'product_id':self.kwargs['product_pk']}
-        
+
+
+class CartViewSet(CreateModelMixin ,DestroyModelMixin , ListModelMixin , RetrieveModelMixin , GenericViewSet):
+    
+    queryset = Cart.objects.all()
+    serializer_class = CartSerializer

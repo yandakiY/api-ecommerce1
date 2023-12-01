@@ -1,6 +1,6 @@
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
-from ecommerce.models import Category, Product , Review
+from ecommerce.models import Category, Product , Review , Cart , CartItem
 
 
 class CategorySerializer(ModelSerializer):
@@ -98,3 +98,42 @@ class ReviewSerializer(ModelSerializer):
     def create(self, validated_data):
         product_id = self.context['product_id']
         return Review.objects.create(product_id=product_id , **validated_data)
+    
+
+class ProductSerializerCartItem(ModelSerializer):
+    
+    class Meta:
+        model = Product
+        fields = ['id' , 'title', 'price']
+
+class CartItemSerrializer(ModelSerializer):
+    
+    product = ProductSerializerCartItem()
+    amount = serializers.SerializerMethodField(method_name='get_amount')
+    class Meta:
+        model = CartItem
+        fields = [
+            'id',
+            'product',
+            'quantity',
+            'amount'
+        ]
+        
+    def get_amount(self , cart_item: CartItem):
+        return cart_item.quantity * cart_item.product.price
+
+
+class CartSerializer(ModelSerializer):
+    
+    id = serializers.UUIDField(read_only = True)
+    items = CartItemSerrializer(many = True , read_only=True)
+    total_price = serializers.SerializerMethodField(method_name='total')
+    
+    class Meta:
+        model = Cart
+        fields = ['id' , 'items' ,'total_price']
+        
+    def total(self , cart:Cart):
+        items_cart = cart.items.all()
+        sum_total = sum([item.product.price * item.quantity for item in items_cart])
+        return sum_total

@@ -58,3 +58,20 @@ class Review(TitleDescriptionModel , TimeStampedModel , ModelId):
     
     def __str__(self) -> str:
         return f'{self.title}'
+    
+    
+class Cart(TimeStampedModel , ModelId):
+    
+    def __str__(self) -> str:
+        return str(self.id)
+    
+    class Meta:
+        ordering = ['-created']
+    
+    
+class CartItem(models.Model):
+    cart = models.ForeignKey(Cart , on_delete=models.CASCADE , related_name='items' , blank=True , null=True)
+    product = models.ForeignKey(Product , on_delete=models.CASCADE , blank=True , null=True)
+    quantity = models.PositiveIntegerField(default=1)
+    
+    
