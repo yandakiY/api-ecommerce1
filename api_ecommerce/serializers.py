@@ -1,6 +1,6 @@
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
-from ecommerce.models import Category, Product , Review , Cart , CartItem
+from ecommerce.models import Category, Product ,ProductImage , Review , Cart , CartItem
 
 
 class CategorySerializer(ModelSerializer):
@@ -37,28 +37,49 @@ class UpdateCategorySerializer(ModelSerializer):
             'description',
         ]
 
-class ProductSerializer(ModelSerializer):
+
+class ProductImageSerializer(ModelSerializer):
     
-    category_product = CategorySerializer(source = 'category', many=False)
+    class Meta:
+        model = ProductImage
+        fields = [
+            'id',
+            'image',
+            'product'
+        ]
+
+
+class ProductSerializer(ModelSerializer):
+
+    category_product = CreateCategorySerializer(source = 'category', many=False)
     name = serializers.CharField(source='title' , required=True)
+    images = ProductImageSerializer(many=True , read_only=True)
+    
 
     class Meta:
         model = Product
         fields = [
             'id',
             'name',
-            'old_price',
             'price',
             'stock',
             'description',
             'slug',
             'created',
-            'discount',
             'category_product',
+            'images',
         ]
+        
         
 class CreateProductSerializer(ModelSerializer):
     
+    
+    # Mettre en place 'images' et les fonctions create ainsi que la mise a jour des fields
+    images = ProductImageSerializer(many=True , read_only=True)
+    uploaded_images = serializers.ListField(
+        write_only = True,
+        child = serializers.ImageField(max_length = 1000000 , allow_empty_file = False , use_url = False)
+    )
     class Meta:
         model = Product
         fields = [
@@ -68,8 +89,21 @@ class CreateProductSerializer(ModelSerializer):
             'status',
             'category',
             'old_price',
-            'discount'
+            'discount',
+            'images',
+            'uploaded_images'
         ]
+        
+    def create(self, validated_data):
+        # pop uploaded_images
+        uploaded_images = validated_data.pop('uploaded_images')
+        # save product
+        product = Product.objects.create(**validated_data)
+        # save images
+        for img in uploaded_images:
+            image = ProductImage.objects.create(product=product , image=img)
+            
+        return product
         
 
 class UpdateProductSerializer(ModelSerializer):
@@ -101,10 +135,10 @@ class ReviewSerializer(ModelSerializer):
     
 
 class ProductSerializerCartItem(ModelSerializer):
-    
+    name = serializers.CharField(source='title')
     class Meta:
         model = Product
-        fields = ['id' , 'title', 'price']
+        fields = ['id' , 'name', 'price']
 
 class CartItemSerrializer(ModelSerializer):
     

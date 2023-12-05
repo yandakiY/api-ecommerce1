@@ -51,9 +51,13 @@ class Product(ModelId , TitleSlugDescriptionModel, TimeStampedModel , ActivatorM
         
         return self.image
     
-    
+
+class ProductImage(models.Model):
+    product = models.ForeignKey(Product , on_delete=models.CASCADE , related_name='images')
+    image = models.ImageField(upload_to='img/' , default='' , blank=True , null=True)
+
+
 class Review(TitleDescriptionModel , TimeStampedModel , ModelId):
-    
     product = models.ForeignKey(Product , on_delete=models.CASCADE , related_name='reviews', default=None)
     
     def __str__(self) -> str:
