@@ -1,6 +1,6 @@
 from django.shortcuts import render , get_object_or_404
 from rest_framework.response import Response
-from .serializers import CartSerializer , AddCartItemSerializer , CartItemSerializer , ReviewSerializer , CategorySerializer , UpdateProductSerializer ,CreateProductSerializer , ProductSerializer, CreateCategorySerializer, UpdateCategorySerializer
+from .serializers import CartSerializer , UpdateCartItemSerializer , AddCartItemSerializer , CartItemSerializer , ReviewSerializer , CategorySerializer , UpdateProductSerializer ,CreateProductSerializer , ProductSerializer, CreateCategorySerializer, UpdateCategorySerializer
 from ecommerce.models import Category, Product , Review , Cart , CartItem
 from django_filters.rest_framework import DjangoFilterBackend
 from .filter import ProductFilter , CategoryFilter
@@ -85,6 +85,9 @@ class CartItemSet(ModelViewSet):
     def get_serializer_class(self):
         if self.request.method == 'POST':
             return AddCartItemSerializer
+        if self.request.method == 'PUT' or self.request.method == 'PATCH':
+            return UpdateCartItemSerializer
+        
         return CartItemSerializer
     
     def get_serializer_context(self):

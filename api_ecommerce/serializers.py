@@ -157,25 +157,63 @@ class CartItemSerializer(ModelSerializer):
         return cart_item.quantity * cart_item.product.price
 
 
+class UpdateCartItemSerializer(ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
+    class Meta:
+        model = CartItem
+        fields = [
+            'id',
+            'quantity'
+        ]
+
 class AddCartItemSerializer(ModelSerializer):
     
     product_id = serializers.UUIDField()
-    
+    # quantity = serializers.IntegerField()
     
     # validate product_id
     def validate_product_id(self, value):
         if not Product.objects.filter(pk=value).exists():
             raise serializers.ValidationError("There is no product associated with the given ID")
+        return value
+    
+    def validate_quantity(self , value):
+        # get product 
+        # product_id = self.initial_data.get('product_id')
+        # # print(product_id)
+        # product_selected = Product.objects.get(pk=product_id)
+        # # print(type(product_selected.stock))
+        
+        # if product_selected.stock < value:
+        #     raise serializers.ValidationError('Quantity is too much')
+        # else:
+        #     product_selected.stock -= value
+        #     product_selected.save()
+        
+        if value <= 0:
+            raise serializers.ValidationError('No negative number')
         
         return value
-  
+    
         
+    
     def save(self, **kwargs):
         product_id = self.validated_data['product_id']
         quantity = self.validated_data['quantity']
         cart_id = self.context["cart_id"]
         
+        
+        # product_selected = Product.objects.get(pk=product_id)
+        # if product_selected.stock <= quantity:
+        #     raise serializers.ValidationError("Quantity is more than Product inventory")
+        
+        # # reduct inventory
+        # product_selected.stock -= quantity
+        # product_selected.save()
+        
+        
         try:
+            # checking inventory of product selected
             cart_item = CartItem.objects.get(product_id=product_id , cart_id=cart_id)
             cart_item.quantity += quantity
             cart_item.save()
@@ -185,8 +223,6 @@ class AddCartItemSerializer(ModelSerializer):
         except CartItem.DoesNotExist:
             self.instance = CartItem.objects.create(cart_id=cart_id, **self.validated_data)
             
-            
-        
         return self.instance   
 
     class Meta:
