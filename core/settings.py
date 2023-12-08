@@ -39,10 +39,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'core',
+    'core_user',
     'ecommerce',
     'api_ecommerce',
     'rest_framework',
+    'rest_framework.authtoken',
     'django_filters',
+    'djoser',
 ]
 
 MIDDLEWARE = [
@@ -86,6 +89,8 @@ DATABASES = {
     }
 }
 
+AUTH_USER_MODEL = 'core_user.User'
+
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -106,9 +111,24 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 REST_FRAMEWORK = {
-    'PAGE_SIZE' : 2
-    
+    'PAGE_SIZE' : 2,
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        
+    ),
 }
+
+SIMPLE_JWT = {
+   'AUTH_HEADER_TYPES': ('JWT',),
+}
+
+DJOSER = {
+    'SERIALIZERS' : {
+        'user_create':'core_user.serializers.MyUserCreateSerializer'
+    }
+}
+
+
 
 
 # Internationalization

@@ -1,5 +1,6 @@
 from decimal import Decimal
 from django.db import models
+from django.contrib.auth.models import AbstractUser , BaseUserManager
 from django.utils.text import slugify
 from utils.models import Model as ModelId
 from django_extensions.db.models import TitleSlugDescriptionModel , TitleDescriptionModel , TimeStampedModel ,ActivatorModel
@@ -77,5 +78,4 @@ class CartItem(models.Model):
     cart = models.ForeignKey(Cart , on_delete=models.CASCADE , related_name='items' , blank=True , null=True)
     product = models.ForeignKey(Product , on_delete=models.CASCADE , blank=True , null=True)
     quantity = models.PositiveIntegerField(default=1)
-    
     

@@ -21,7 +21,9 @@ items_router.register('items' , views.CartItemSet , basename='cart-items')
 urlpatterns = [
     path('' , include(router.urls)),
     path('',include(product_router.urls)),
-    path('' , include(items_router.urls))
+    path('' , include(items_router.urls)),
+    # path('auth/', include('djoser.urls')),
+    # path('auth/', include('djoser.urls.jwt')),
     # path('categories', views.ApiCategories.as_view()),
     # path('<str:pk>/categories' , views.ApiCategory.as_view()),
     # path('products', views.ApiProducts.as_view()),
