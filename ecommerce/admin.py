@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Product , Review , Cart ,CartItem
+from .models import Category, Product , Review , Cart ,CartItem , Order , OrderItem
 
 # Register your models here.
 
@@ -25,3 +25,13 @@ class CartAdmin(admin.ModelAdmin):
 @admin.register(CartItem)
 class CartItemAdmin(admin.ModelAdmin):
     list_display = ['id' , 'cart' , 'product','quantity']
+    
+    
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ['id' , 'placed_at' , 'pending_status' , 'owner']
+    
+    
+@admin.register(OrderItem)
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ['id' , 'product' , 'quantity']
