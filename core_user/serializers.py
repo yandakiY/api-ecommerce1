@@ -4,6 +4,7 @@ from djoser.serializers import UserCreateSerializer
 
 
 class MyUserCreateSerializer(ModelSerializer):
+    password = serializers.CharField(style={"input_type": "password"}, write_only=True)
     
     class Meta(UserCreateSerializer.Meta):
         fields = [
