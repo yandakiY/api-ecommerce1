@@ -1,6 +1,6 @@
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
-from ecommerce.models import Category, Product ,ProductImage , Review , Cart , CartItem
+from ecommerce.models import Category , Order , OrderItem , Product ,ProductImage , Review , Cart , CartItem
 
 
 class CategorySerializer(ModelSerializer):
@@ -246,3 +246,39 @@ class CartSerializer(ModelSerializer):
         items_cart = cart.items.all()
         sum_total = sum([item.product.price * item.quantity for item in items_cart])
         return sum_total
+    
+  
+class OrderItemSerializer(ModelSerializer):
+    product = ProductSerializerCartItem()
+    price_items = serializers.SerializerMethodField(method_name='get_price')
+    class Meta:
+        model = OrderItem
+        fields = [
+            'id',
+            'product',
+            'quantity',
+            'price_items'
+        ]
+        
+    def get_price(self , order_item:OrderItem):
+        return order_item.product.price * order_item.quantity
+        
+class OrderSerializer(ModelSerializer):
+    items = OrderItemSerializer(many = True)
+    price_orders = serializers.SerializerMethodField(method_name='get_price_orders')
+    class Meta:
+        model = Order
+        fields = [
+            'id',
+            'placed_at',
+            'pending_status',
+            'owner',
+            'items',
+            'price_orders'
+        ]
+        
+    
+    def get_price_orders(self , order: Order):
+        
+        total_order = sum([item.product.price * item.quantity for item in order.items.all()])
+        return total_order

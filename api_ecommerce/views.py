@@ -1,7 +1,7 @@
 from django.shortcuts import render , get_object_or_404
 from rest_framework.response import Response
-from .serializers import CartSerializer , UpdateCartItemSerializer , AddCartItemSerializer , CartItemSerializer , ReviewSerializer , CategorySerializer , UpdateProductSerializer ,CreateProductSerializer , ProductSerializer, CreateCategorySerializer, UpdateCategorySerializer
-from ecommerce.models import Category, Product , Review , Cart , CartItem
+from .serializers import CartSerializer , OrderSerializer , UpdateCartItemSerializer , AddCartItemSerializer , CartItemSerializer , ReviewSerializer , CategorySerializer , UpdateProductSerializer ,CreateProductSerializer , ProductSerializer, CreateCategorySerializer, UpdateCategorySerializer
+from ecommerce.models import Category, Product , Order , Review , Cart , CartItem
 from django_filters.rest_framework import DjangoFilterBackend
 from .filter import ProductFilter , CategoryFilter
 from rest_framework import status
@@ -13,6 +13,7 @@ from rest_framework.viewsets import ModelViewSet , GenericViewSet
 from rest_framework.mixins import CreateModelMixin , DestroyModelMixin , RetrieveModelMixin , ListModelMixin
 from rest_framework.filters import SearchFilter , OrderingFilter
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticated , AllowAny
 
 # 
 # Create your views here.
@@ -42,7 +43,7 @@ class CategoryViewSet(ModelViewSet):
     
 
 class ProductViewSet(ModelViewSet):
-    
+    # permission_classes = [AllowAny]
     queryset = Product.objects.all()
     filter_backends = [DjangoFilterBackend , SearchFilter , OrderingFilter]
     
@@ -54,7 +55,7 @@ class ProductViewSet(ModelViewSet):
     def get_serializer_class(self):
         
         if self.request.method == 'GET':
-            return ProductSerializer
+            return ProductSerializer 
         if self.request.method == 'POST':
             return CreateProductSerializer
         if self.request.method == 'PUT' or self.request.method == 'PATCH':
@@ -63,7 +64,7 @@ class ProductViewSet(ModelViewSet):
         
 
 class ReviewViewSet(ModelViewSet):
-    
+    permission_classes = [IsAuthenticated]
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     
@@ -95,6 +96,20 @@ class CartItemSet(ModelViewSet):
     
     
 class CartViewSet(CreateModelMixin ,DestroyModelMixin , ListModelMixin , RetrieveModelMixin , GenericViewSet):
-    
+    permission_classes = [IsAuthenticated]
     queryset = Cart.objects.all()
     serializer_class = CartSerializer
+    
+    
+class OrderViewSet(ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+    
+    def get_queryset(self):
+        user = self.request.user
+        
+        if user.is_staff:
+            return Order.objects.all()
+        
+        return Order.objects.filter(owner = user)

@@ -99,7 +99,7 @@ class Order(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     
     def __str__(self):
-        return self.pending_status
+        return f'{self.pending_status} - Order {self.id}'
     
 
 class OrderItem(models.Model):
@@ -109,4 +109,4 @@ class OrderItem(models.Model):
     quantity = models.PositiveSmallIntegerField()
 
     def __str__(self):
-        return self.product.name
+        return self.product.title
