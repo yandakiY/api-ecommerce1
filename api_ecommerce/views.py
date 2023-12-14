@@ -1,6 +1,6 @@
 from django.shortcuts import render , get_object_or_404
 from rest_framework.response import Response
-from .serializers import CartSerializer , OrderSerializer , UpdateCartItemSerializer , AddCartItemSerializer , CartItemSerializer , ReviewSerializer , CategorySerializer , UpdateProductSerializer ,CreateProductSerializer , ProductSerializer, CreateCategorySerializer, UpdateCategorySerializer
+from .serializers import CartSerializer , CreateOrderSerializer , OrderSerializer , UpdateCartItemSerializer , AddCartItemSerializer , CartItemSerializer , ReviewSerializer , CategorySerializer , UpdateProductSerializer ,CreateProductSerializer , ProductSerializer, CreateCategorySerializer, UpdateCategorySerializer
 from ecommerce.models import Category, Product , Order , Review , Cart , CartItem
 from django_filters.rest_framework import DjangoFilterBackend
 from .filter import ProductFilter , CategoryFilter
@@ -104,7 +104,16 @@ class CartViewSet(CreateModelMixin ,DestroyModelMixin , ListModelMixin , Retriev
 class OrderViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated]
     queryset = Order.objects.all()
-    serializer_class = OrderSerializer
+    
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return CreateOrderSerializer
+        return OrderSerializer
+    
+    
+    def get_serializer_context(self):
+        return {'user_id':self.request.user.id}
+    
     
     def get_queryset(self):
         user = self.request.user

@@ -1,7 +1,8 @@
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 from ecommerce.models import Category , Order , OrderItem , Product ,ProductImage , Review , Cart , CartItem
-
+from django.db import transaction
+from djoser.serializers import UserCreateSerializer
 
 class CategorySerializer(ModelSerializer):
     
@@ -262,10 +263,20 @@ class OrderItemSerializer(ModelSerializer):
         
     def get_price(self , order_item:OrderItem):
         return order_item.product.price * order_item.quantity
-        
+
+class UserOrderSerializer(ModelSerializer):
+    class Meta(UserCreateSerializer.Meta):
+        fields = [
+            'id',
+            'first_name',
+            'last_name',
+            'email'
+        ]
+       
 class OrderSerializer(ModelSerializer):
     items = OrderItemSerializer(many = True)
     price_orders = serializers.SerializerMethodField(method_name='get_price_orders')
+    owner = UserOrderSerializer()
     class Meta:
         model = Order
         fields = [
@@ -282,3 +293,28 @@ class OrderSerializer(ModelSerializer):
         
         total_order = sum([item.product.price * item.quantity for item in order.items.all()])
         return total_order
+
+    
+class CreateOrderSerializer(ModelSerializer):
+    cart_id = serializers.UUIDField()
+    class Meta:
+        model = Order
+        fields = ['cart_id']
+        
+    
+    def save(self, **kwargs):
+        print(self.validated_data['cart_id'])
+        
+        with transaction.atomic():
+            cart_id = self.validated_data['cart_id']
+            user = self.context['user_id']
+            # user = 
+            # create an order
+            order = Order.objects.create(owner_id = user)
+            # save order item
+            cart_items = CartItem.objects.filter(cart_id = cart_id)
+            items_orders = [OrderItem.objects.create(product = items.product , quantity = items.quantity , order = order) for items in cart_items]
+            # OrderItem.objects.bulk_create(items_orders)
+            # delete cart
+            Cart.objects.filter(id = cart_id).delete()
+             
